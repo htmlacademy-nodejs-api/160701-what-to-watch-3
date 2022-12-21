@@ -1,7 +1,7 @@
 # Личный проект «Что посмотреть»
 
-* Студент: [Дмитрий Щеклеин](https://up.htmlacademy.ru/nodejs-api/3/user/160701).
-* Наставник: `Неизвестно`.
+- Студент: [Дмитрий Щеклеин](https://up.htmlacademy.ru/nodejs-api/3/user/160701).
+- Наставник: [Олег Зубов](https://htmlacademy.ru/profile/id42701).
 
 ---
 
