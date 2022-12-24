@@ -18,14 +18,15 @@ export default class TSVFileReader implements FileReaderInterface {
     }
     return this.rowData
       .split('\n')
-      .filter((row) => row.trim() !== '')
-      .map((line) => line.split('\t'))
-      .map(
-        ([
+      .filter(row => row.trim() !== '')
+      .map(line => line.split('\t'))
+      .map(array => {
+        const [
           name,
           description,
-          released,
+          created,
           genre,
+          released,
           rating,
           previewVideoLink,
           videoLink,
@@ -39,11 +40,13 @@ export default class TSVFileReader implements FileReaderInterface {
           email,
           avatarPath,
           password,
-        ]) => ({
+        ] = array;
+
+        return {
           name,
-          posterImage,
           backgroundImage,
           backgroundColor,
+          created: new Date(created),
           videoLink,
           previewVideoLink,
           description,
@@ -52,9 +55,10 @@ export default class TSVFileReader implements FileReaderInterface {
           starring: starring.split(','),
           runTime: Number.parseInt(runTime, 10),
           genre: genre as Genres,
-          released: new Date(released),
+          released: Number(released),
+          posterImage,
           user: { firstname, email, avatarPath, password },
-        })
-      );
+        };
+      });
   }
 }
