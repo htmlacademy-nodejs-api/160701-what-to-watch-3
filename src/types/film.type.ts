@@ -24,6 +24,7 @@ export type Film = {
   starring: string[];
   runTime: number;
   genre: Genres;
-  released: Date;
+  created: Date;
+  released: number;
   user: User;
 };
