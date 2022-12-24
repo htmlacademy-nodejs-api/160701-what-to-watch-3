@@ -1,20 +1,19 @@
-import { User } from "./user.type";
+import { User } from './user.type';
 
-type Genres =
-  | "comedy"
-  | "crime"
-  | "documentary"
-  | "drama"
-  | "horror"
-  | "family"
-  | "romance"
-  | "scifi"
-  | "thriller";
+export type Genres =
+  | 'comedy'
+  | 'crime'
+  | 'documentary'
+  | 'drama'
+  | 'horror'
+  | 'family'
+  | 'romance'
+  | 'scifi'
+  | 'thriller';
 
 export type Film = {
   name: string;
   posterImage: string;
-  previewImage: string;
   backgroundImage: string;
   backgroundColor: string;
   videoLink: string;
@@ -22,7 +21,7 @@ export type Film = {
   description: string;
   rating: number;
   director: string;
-  starring: [string];
+  starring: string[];
   runTime: number;
   genre: Genres;
   released: Date;
