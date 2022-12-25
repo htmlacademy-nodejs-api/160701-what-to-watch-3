@@ -10,7 +10,7 @@ type Filter<B, C> = NonNullable<
 
 // тип объекта, где ключ - это клюю требуемого объекта, а значение - название метода chalk
 type Colors<T> = {
-  [Key in keyof T]+?: Filter<typeof chalk, (s: string) => any>;
+  [Key in keyof T]+?: Filter<typeof chalk, (s: string) => unknown>;
 };
 
 // объект, где ключ - ключ из объекта MovieCard, а значение название метода chalk

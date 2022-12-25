@@ -18,9 +18,9 @@ export default class TSVFileReader implements FileReaderInterface {
     }
     return this.rowData
       .split('\n')
-      .filter(row => row.trim() !== '')
-      .map(line => line.split('\t'))
-      .map(array => {
+      .filter((row) => row.trim() !== '')
+      .map((line) => line.split('\t'))
+      .map((array) => {
         const [
           name,
           description,
