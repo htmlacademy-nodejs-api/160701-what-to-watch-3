@@ -29,10 +29,17 @@
       "A biopic depicting the early years of legendary Di…hes' career from the late 1920s to the mid 1940s.",
       "In 1862, Amsterdam Vallon returns to the Five Poin…ge against Bill the Butcher, his father's killer."
     ],
-    "created": ["2022-04-06T08:45:40.283Z", "2022-01-06T08:45:40.283Z"],
-    "genres": ["drama", "adventure"],
-    "released": [2018, 2012],
-    "ratings": [0, 0],
+    "genres": [
+      "comedy",
+      "crime",
+      "documentary",
+      "drama",
+      "horror",
+      "family",
+      "romance",
+      "scifi",
+      "thriller"
+    ],
     "previewVideoLinks": [
       "https://11.react.pages.academy/static/film/video/traffic.mp4",
       "https://11.react.pages.academy/static/film/video/dog.mp4"
