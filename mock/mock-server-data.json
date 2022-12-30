@@ -44,11 +44,11 @@
       "https://11.react.pages.academy/static/film/video/traffic.mp4",
       "https://11.react.pages.academy/static/film/video/dog.mp4"
     ],
-    "videoLink": [
+    "videoLinks": [
       "https://11.react.pages.academy/static/film/video/bubbles.mp4",
       "https://11.react.pages.academy/static/film/video/bubbles.mp4"
     ],
-    "starring": [
+    "starrings": [
       "Lady Gaga",
       "Bradley Cooper",
       "Sam Elliott",
@@ -56,8 +56,8 @@
       "Kara Hayward",
       "Bruce Willis"
     ],
-    "director": ["Bradley Cooper", "Wes Anderson"],
-    "posterImage": [
+    "directors": ["Bradley Cooper", "Wes Anderson"],
+    "posterImages": [
       "https://11.react.pages.academy/static/film/poster/A_Star_Is_Born.jpg",
       "https://11.react.pages.academy/static/film/poster/Moonrise_Kingdom.jpg",
       "https://11.react.pages.academy/static/film/poster/Legend.jpg",
@@ -69,7 +69,7 @@
       "https://11.react.pages.academy/static/film/poster/Aviator.jpg",
       "https://11.react.pages.academy/static/film/poster/Gangs_of_New_York_Poster.jpg"
     ],
-    "backgroundImage": [
+    "backgroundImages": [
       "https://11.react.pages.academy/static/film/background/A_Star_is_Born.jpg",
       "https://11.react.pages.academy/static/film/background/Moonrise_Kingdom.jpg",
       "https://11.react.pages.academy/static/film/background/legend.jpg",
@@ -86,7 +86,7 @@
       "https://11.react.pages.academy/static/film/background/beach.jpg",
       "https://11.react.pages.academy/static/film/background/Orlando.jpg"
     ],
-    "backgroundColor": [
+    "backgroundColors": [
       "#C4C0C0",
       "#D8E3E5",
       "#E1DAD7",
@@ -103,7 +103,7 @@
       "#EBC996",
       "#D8D3BD"
     ],
-    "firstname": [
+    "firstnames": [
       "Иван",
       "Олег",
       "Пьер",
@@ -115,7 +115,7 @@
       "Рокки",
       "Джон"
     ],
-    "email": [
+    "emails": [
       "snow@pisem.local",
       "president@dka.local",
       "fish@big.local",
@@ -126,7 +126,7 @@
       "test@lost.loca",
       "kujo-fan@story.local"
     ],
-    "avatarPath": [
+    "avatarPaths": [
       "user.jpg",
       "photo.jpg",
       "awesome-avatar.jpg",
