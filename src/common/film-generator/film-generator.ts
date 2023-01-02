@@ -1,6 +1,7 @@
 import { MockData } from '../../types/mock-data.type';
 import { Random } from '../../utils/random.js';
 import { FilmGeneratorInterface } from './film-generator.interface';
+import dayjs from 'dayjs';
 
 export default class FilmGenerator implements FilmGeneratorInterface {
   constructor(private readonly mockData: MockData) {}
@@ -39,7 +40,7 @@ export default class FilmGenerator implements FilmGeneratorInterface {
     const runTime = Random.int(30, 150);
     const released = Random.int(1950, 2023);
     const rating = Random.int(0, 10);
-    const created = new Date().toISOString();
+    const created = dayjs().subtract(Random.int(1, 7), 'day').toISOString();
 
     return [
       name,
