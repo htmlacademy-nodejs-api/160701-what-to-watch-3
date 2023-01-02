@@ -42,3 +42,6 @@ export const createFilm = (row: string) => {
     user: { firstname, email, avatarPath, password },
   } as Film;
 };
+
+export const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : '';
