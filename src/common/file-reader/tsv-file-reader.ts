@@ -1,12 +1,36 @@
-import { readFileSync } from 'fs';
+import { createReadStream } from 'fs';
 import { FileReaderInterface } from './file-reader.interface.js';
+import EventEmitter from 'events';
+export default class TSVFileReader
+  extends EventEmitter
+  implements FileReaderInterface
+{
+  constructor(public filename: string) {
+    super();
+  }
 
-export default class TSVFileReader implements FileReaderInterface {
-  private rowData = '';
+  public async read(): Promise<void> {
+    const stream = createReadStream(this.filename, {
+      highWaterMark: 16384,
+      encoding: 'utf-8',
+    });
 
-  constructor(public filename: string) {}
+    let lineRead = '';
+    let endLinePosition = -1;
+    let importedRowCount = 0;
 
-  public read(): void {
-    this.rowData = readFileSync(this.filename, 'utf-8');
+    for await (const chunk of stream) {
+      lineRead += chunk.toString();
+
+      while ((endLinePosition = lineRead.indexOf('\n')) >= 0) {
+        const completeRow = lineRead.slice(0, endLinePosition + 1);
+        lineRead = lineRead.slice(++endLinePosition);
+        importedRowCount++;
+
+        this.emit('lineread', completeRow);
+      }
+
+      this.emit('end', importedRowCount);
+    }
   }
 }
