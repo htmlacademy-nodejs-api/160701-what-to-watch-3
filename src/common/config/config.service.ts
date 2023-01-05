@@ -9,7 +9,7 @@ import { Component } from '../../types/component.types.js';
 export default class ConfigService implements ConfigInterface {
   private config: ConfigSchema;
 
-  constructor(@inject(Component.LoggerInterface) logger: LoggerInterface) {
+  constructor(@inject(Component.LoggerInterface) private logger: LoggerInterface) {
     this.logger = logger;
 
     const parsedOutput = config();
