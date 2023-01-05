@@ -18,7 +18,7 @@ export const configSchema = convict<ConfigSchema>({
   },
   SALT: {
     doc: 'Salt for password hash',
-    format: 'string',
+    format: String,
     env: 'SALT',
     default: null,
   },
