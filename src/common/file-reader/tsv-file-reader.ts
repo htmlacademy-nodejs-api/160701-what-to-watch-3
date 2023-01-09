@@ -1,64 +1,37 @@
-import { readFileSync } from 'fs';
+import { createReadStream } from 'node:fs';
 import { FileReaderInterface } from './file-reader.interface.js';
-import { Film } from '../../types/film.type.js';
-import { Genres } from '../../types/film.type.js';
+import EventEmitter from 'node:events';
 
-export default class TSVFileReader implements FileReaderInterface {
-  private rowData = '';
-
-  constructor(public filename: string) {}
-
-  public read(): void {
-    this.rowData = readFileSync(this.filename, 'utf-8');
+export default class TSVFileReader
+  extends EventEmitter
+  implements FileReaderInterface
+{
+  constructor(public filename: string) {
+    super();
   }
 
-  public toArray(): Film[] {
-    if (!this.rowData) {
-      return [];
-    }
-    return this.rowData
-      .split('\n')
-      .filter((row) => row.trim() !== '')
-      .map((line) => line.split('\t'))
-      .map((array) => {
-        const [
-          name,
-          description,
-          created,
-          genre,
-          released,
-          rating,
-          previewVideoLink,
-          videoLink,
-          starring,
-          director,
-          runTime,
-          posterImage,
-          backgroundImage,
-          backgroundColor,
-          firstname,
-          email,
-          avatarPath,
-          password,
-        ] = array;
+  public async read(): Promise<void> {
+    const stream = createReadStream(this.filename, {
+      highWaterMark: 2 ** 14,
+      encoding: 'utf-8',
+    });
 
-        return {
-          name,
-          backgroundImage,
-          backgroundColor,
-          created: new Date(created),
-          videoLink,
-          previewVideoLink,
-          description,
-          rating: Number.parseInt(rating, 10),
-          director,
-          starring: starring.split(','),
-          runTime: Number.parseInt(runTime, 10),
-          genre: genre as Genres,
-          released: Number(released),
-          posterImage,
-          user: { firstname, email, avatarPath, password },
-        };
-      });
+    let lineRead = '';
+    let endLinePosition = -1;
+    let importedRowCount = 0;
+
+    for await (const chunk of stream) {
+      lineRead += chunk.toString();
+
+      while ((endLinePosition = lineRead.indexOf('\n')) >= 0) {
+        const completeRow = lineRead.slice(0, endLinePosition + 1);
+        lineRead = lineRead.slice(++endLinePosition);
+        importedRowCount++;
+
+        this.emit('lineread', completeRow);
+      }
+
+      this.emit('end', importedRowCount);
+    }
   }
 }
