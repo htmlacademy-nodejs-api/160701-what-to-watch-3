@@ -1,9 +1,10 @@
-import { inject } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { DatabaseInterface } from './database.interface.js';
 import { Component } from '../../types/component.types.js';
 import { LoggerInterface } from '../logger/logger.interface.js';
 import mongoose from 'mongoose';
 
+@injectable()
 export default class DatabaseService implements DatabaseInterface {
   constructor(@inject(Component.LoggerInterface) private logger: LoggerInterface) {}
 
