@@ -5,7 +5,7 @@ import Application from './app/application.js';
 import { applicationContainer } from './app/application.container.js';
 import { userContainer } from './modules/user/user.container.js';
 
-const mainContainer = Container.merge(applicationContainer, userContainer);
+const mainContainer = Container.merge(applicationContainer, userContainer, filmContainer);
 
 async function bootstrap() {
   const application = mainContainer.get<Application>(Component.Application);
