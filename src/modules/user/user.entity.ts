@@ -18,7 +18,6 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
     this.email = data.email;
     this.avatarPath = data.avatarPath;
     this.firstname = data.firstname;
-    this.password = data.password;
   }
 
   @prop({ unique: true, required: true })
@@ -34,7 +33,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
   private password!: string;
 
   public setPassword(password: string, salt: string) {
-    password = createSHA256(password, salt);
+    this.password = createSHA256(password, salt);
   }
 
   public getPassword() {
