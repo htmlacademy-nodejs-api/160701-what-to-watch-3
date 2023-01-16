@@ -26,7 +26,7 @@ export class FilmEntity extends defaultClasses.TimeStamps {
   })
   public genre!: Genres;
 
-  @prop({ type: require })
+  @prop({ required: true, type: Number })
   public released!: number;
 
   @prop({ required: true })
