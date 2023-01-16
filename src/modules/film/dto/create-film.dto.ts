@@ -1,5 +1,4 @@
 import { Genres } from '../../../types/film.type.js';
-import { User } from '../../../types/user.type.js';
 
 export default class CreateFilmDto {
   public name!: string;
@@ -16,5 +15,5 @@ export default class CreateFilmDto {
   public genre!: Genres;
   public created!: Date;
   public released!: number;
-  public user!: User;
+  public userId!: string;
 }
