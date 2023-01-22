@@ -22,7 +22,8 @@ export class FilmEntity extends defaultClasses.TimeStamps {
   public created!: Date;
 
   @prop({
-    type: () => String, //TODO указать union Genres
+    type: () => String,
+    enum: Genres,
   })
   public genre!: Genres;
 
