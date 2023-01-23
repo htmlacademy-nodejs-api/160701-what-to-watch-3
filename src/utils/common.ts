@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { Film, Genres } from '../types/film.type.js';
 
 export const createFilm = (row: string) => {
@@ -43,5 +44,10 @@ export const createFilm = (row: string) => {
   } as Film;
 };
 
-export const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : '';
+export const getErrorMessage = (error: unknown): string => (error instanceof Error ? error.message : '');
+
+export const createSHA256 = (line: string, salt: string) => {
+  const shaHasher = crypto.createHmac('sha256', salt);
+
+  return shaHasher.update(line).digest('hex');
+};

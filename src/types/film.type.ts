@@ -1,15 +1,16 @@
 import { User } from './user.type';
 
-export type Genres =
-  | 'comedy'
-  | 'crime'
-  | 'documentary'
-  | 'drama'
-  | 'horror'
-  | 'family'
-  | 'romance'
-  | 'scifi'
-  | 'thriller';
+export enum Genres {
+  Comedy = 'Comedy',
+  Crime = 'Crime',
+  Documentary = 'Documentary',
+  Drama = 'Drama',
+  Horror = 'Horror',
+  Family = 'Family',
+  Romance = 'Romance',
+  Scifi = 'Scifi',
+  Thriller = 'Thriller',
+}
 
 export type Film = {
   name: string;
