@@ -1,0 +1,10 @@
+openapi: 3.1.0
+info:
+  title: "API сервер для демо-проекта 'Что посмотреть'"
+  description: |-
+    * Список ресурсов и маршрутов сервера
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: "1.0.0"
+
