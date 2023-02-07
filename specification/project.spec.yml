@@ -30,12 +30,24 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/createUser'
+      responses:
+        "201":
+          description: Пользователь зарегистрирован. Объект пользователя.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "409":
+          description: Пользователь с таким email уже существует.
+
+
   /users/{userId}/avatar:
     post:
       tags:
         - users
       summary: Загрузить изображение аватара
-      description: Возвращает информацию по авторизованному пользователю
+      description: Загружает изображение аватара пользователя. Изображение
+        аватара должно быть в формате `png` или `jpg`.
 
   /users/login:
     post:
@@ -56,3 +68,34 @@ paths:
       - users
       summary: Завершает сеанс пользователя
       description: Завершает сеанс работы - выход из закрытой части приложения
+
+components:
+  schemas:
+    createUser:
+      type: object
+
+      properties:
+        firstname:
+          type: string
+          example: Keks
+        email:
+          type: string
+          example: keks@example.ru
+        #TODO Аватар пользователя. Необязательное. Изображение пользователя в формате .jpg или .png.
+        # avatarPath:
+        #  type: string
+        #  example: ?
+        password:
+          type: string
+          example: 123456
+    user:
+      type: object
+
+      properties:
+        id:
+          type: string
+          example: sslj0b80s70b7s0b70s
+        email:
+          type: string
+          example: keks@example.ru
+
