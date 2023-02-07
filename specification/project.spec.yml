@@ -40,45 +40,108 @@ paths:
         "409":
           description: Пользователь с таким email уже существует.
 
-
   /users/{userId}/avatar:
     post:
       tags:
         - users
       summary: Загрузить изображение аватара
-      description: Загружает изображение аватара пользователя. Изображение
+      description: Загружает изображение аватара пользователя c `userId`. Изображение
         аватара должно быть в формате `png` или `jpg`.
-
+      #TODO как выглядит requestBody: и responses для этого ресурса? и как их описать
   /users/login:
     post:
       tags:
       - users
-      summary: Авторизация пользователя
-      description: Авторизует пользователя на основе логина и пароля
+      summary: Авторизоваться на сервере
+      description: |-
+        * Отправляет авторизационные данные пользователя (логин и пароль).
+        * В случае успешной проверки логина и пароля сервис возвращает клиенту токен. Клиент использует этот токен для отправки любых запросов. Токен передаётся в заголовках.
+        * Если логин или пароль неверный или пользователь не существует, сервер возвращает ошибку и соответствующий код состояния.
+      requestBody:
+        description:  Информация для авторизации пользователя. Объект, содержащий логин и пароль пользователя.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/authUser'
+      responses:
+        "200":
+          description: Пользователь успешно авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "400":
+          description: Ошибка тела запроса
+        #TODO ошибка неверного логина или пароля
 
     get:
       tags:
       - users
-      summary: Проверка состояния пользователя
-      description: Возвращает информацию по авторизованному пользователю
+      summary: Проверить статус авторизации пользователя
+      description: Возвращает информацию о статусе авторизации пользователя.
+      #TODO нужен ли заголовок для
+      # requestHeaders:
+
+      responses:
+        "200":
+          description: Пользователь авторизован. Объект пользователя.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "401":
+          description: Пользователь не авторизован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
 
   /users/logout:
     delete:
       tabs:
       - users
-      summary: Завершает сеанс пользователя
+      summary: Завершить сеанс пользователя
       description: Завершает сеанс работы - выход из закрытой части приложения
 
+      responses:
+        "204":
+          description: Сеанс завершён
+  /comments/{filmId}:
+    get:
+      tabs:
+        -comments
+      summary: Получить список комментариев
+      description: Возвращает список комментариев для фильма с идентификатором `filmId`.
+    post:
+      tabs:
+        -comments
+      summary: Добавить новый комментарий
+      description: Добавляет новый комментарий для фильма с идентификатором `filmId`.
 components:
   schemas:
+    authUser:
+      type: object
+
+      properties:
+        email:
+          required: true
+          type: string
+          example: keks@example.ru
+        password:
+          required: true
+          type: string
+          example: 123456
     createUser:
       type: object
 
       properties:
         firstname:
+          required: true
           type: string
           example: Keks
         email:
+          required: true
           type: string
           example: keks@example.ru
         #TODO Аватар пользователя. Необязательное. Изображение пользователя в формате .jpg или .png.
@@ -86,6 +149,7 @@ components:
         #  type: string
         #  example: ?
         password:
+          required: true
           type: string
           example: 123456
     user:
@@ -95,7 +159,32 @@ components:
         id:
           type: string
           example: sslj0b80s70b7s0b70s
+        firstname:
+          type: string
+          example: Keks
         email:
           type: string
           example: keks@example.ru
+        avatarPath:
+         type: string
+         example: "img/1.png" #TODO если аватар не был передан при регистрации возвращать пустую строку?
+        token:
+          type: string
+          example: T2xpdmVyLmNvbm5lckBnbWFpbC5jb20=
+    error:
+      type: object
+
+      properties:
+        error:
+          type: string
+          example: Ошибка. Пользователь не авторизован
+    comment:
+      type: object
+      properties:
+        text:
+          type: string
+          example: Lorem ipsum
+        rationg:
+          type: number
+          example: 5
 
