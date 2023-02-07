@@ -6,5 +6,11 @@ info:
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
-  version: "1.0.0"
-
+  version: 1.0.0
+tags:
+  - name: films
+    description: Действия с фильмами.
+  - name: comments
+    description: Действия с комментариями
+  - name: users
+    description: Действия с пользователем.
