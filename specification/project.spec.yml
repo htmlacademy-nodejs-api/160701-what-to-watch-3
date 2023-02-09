@@ -99,7 +99,7 @@ paths:
 
   /users/logout:
     delete:
-      tabs:
+      tags:
       - users
       summary: Завершить сеанс пользователя
       description: Завершает сеанс работы - выход из закрытой части приложения
@@ -109,15 +109,57 @@ paths:
           description: Сеанс завершён
   /comments/{filmId}:
     get:
-      tabs:
-        -comments
+      tags:
+        - comments
       summary: Получить список комментариев
       description: Возвращает список комментариев для фильма с идентификатором `filmId`.
+      responses:
+        "200":
+          description: Массив комментариев
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/comment'
+        "400":
+          description: Ошибка тела запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
     post:
-      tabs:
-        -comments
+      tags:
+        - comments
       summary: Добавить новый комментарий
       description: Добавляет новый комментарий для фильма с идентификатором `filmId`.
+      requestBody:
+        description:  Объект с новым комментарием.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createComment'
+      responses:
+        "200":
+          description: Объект с новым комментарием
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/comment'
+        "400":
+          description: Ошибка тела запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "401":
+          description: Пользователь не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
 components:
   schemas:
     authUser:
@@ -171,20 +213,46 @@ components:
         token:
           type: string
           example: T2xpdmVyLmNvbm5lckBnbWFpbC5jb20=
+
     error:
       type: object
 
       properties:
         error:
           type: string
-          example: Ошибка. Пользователь не авторизован
+          example: Текст ошибки
+
     comment:
+      type: object
+      properties:
+        id:
+          type: string
+          example: sslj0b80s70b7s0b70s
+        date:
+          type: string
+          example: Thu Feb 09 2023 06:14:45 GMT+0300 (Москва, стандартное время)
+        text:
+          type: string
+          example: Lorem ipsum
+        rating:
+          type: number
+          example: 5
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+              example: sslj0b80s70b7s0b70s
+            firstname:
+              type: string
+              example: Keks
+    createComment:
       type: object
       properties:
         text:
           type: string
           example: Lorem ipsum
-        rationg:
+        rating:
           type: number
           example: 5
 
