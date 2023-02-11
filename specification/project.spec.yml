@@ -47,7 +47,40 @@ paths:
       summary: Загрузить изображение аватара
       description: Загружает изображение аватара пользователя c `userId`. Изображение
         аватара должно быть в формате `png` или `jpg`.
-      #TODO как выглядит requestBody: и responses для этого ресурса? и как их описать
+      parameters:
+        - name: userId
+          in: path
+          description: Уникальный идентификатор пользователя
+          required: true
+          schema:
+            type: number
+            example: 1
+      requestBody:
+        description: Аватар
+        required: true
+        content:
+          'image/jpeg':
+            schema:
+              type: string
+              format: binary
+          'image/png':
+            schema:
+              type: string
+              format: binary
+      responses:
+        "201":
+          description: Пользователь изменен. Объект пользователя.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+
+        "400":
+          description: Некорректный формат изображения
+
+        "404":
+          description: Пользователь с таким логином не существует.
+
   /users/login:
     post:
       tags:
@@ -57,6 +90,13 @@ paths:
         * Отправляет авторизационные данные пользователя (логин и пароль).
         * В случае успешной проверки логина и пароля сервис возвращает клиенту токен. Клиент использует этот токен для отправки любых запросов. Токен передаётся в заголовках.
         * Если логин или пароль неверный или пользователь не существует, сервер возвращает ошибку и соответствующий код состояния.
+      parameters:
+          - name: X-Token
+            in: header
+            description: Авторизационный токен пользователя
+            required: true
+            schema:
+              $ref: "#/components/schemas/token"
       requestBody:
         description:  Информация для авторизации пользователя. Объект, содержащий логин и пароль пользователя.
         required: true
@@ -80,8 +120,13 @@ paths:
       - users
       summary: Проверить статус авторизации пользователя
       description: Возвращает информацию о статусе авторизации пользователя.
-      #TODO нужен ли заголовок для
-      # requestHeaders:
+      parameters:
+          - name: X-Token
+            in: header
+            description: Авторизационный токен пользователя
+            required: true
+            schema:
+              $ref: "#/components/schemas/token"
 
       responses:
         "200":
@@ -103,7 +148,13 @@ paths:
       - users
       summary: Завершить сеанс пользователя
       description: Завершает сеанс работы - выход из закрытой части приложения
-
+      parameters:
+          - name: X-Token
+            in: header
+            description: Авторизационный токен пользователя
+            required: true
+            schema:
+              $ref: "#/components/schemas/token"
       responses:
         "204":
           description: Сеанс завершён
@@ -113,6 +164,20 @@ paths:
         - comments
       summary: Получить список комментариев
       description: Возвращает список комментариев для фильма с идентификатором `filmId`.
+      parameters:
+        - name: filmId
+          in: path
+          description: Уникальный идентификатор фильма
+          required: true
+          schema:
+            type: number
+            example: 1
+        - name: X-Token
+          in: header
+          description: Авторизационный токен пользователя
+          required: true
+          schema:
+            $ref: "#/components/schemas/token"
       responses:
         "200":
           description: Массив комментариев
@@ -133,6 +198,20 @@ paths:
         - comments
       summary: Добавить новый комментарий
       description: Добавляет новый комментарий для фильма с идентификатором `filmId`.
+      parameters:
+        - name: X-Token
+          in: header
+          description: Авторизационный токен пользователя
+          required: true
+          schema:
+            $ref: "#/components/schemas/token"
+        - name: filmId
+          in: path
+          description: Уникальный идентификатор фильма
+          required: true
+          schema:
+            type: number
+            example: 1
       requestBody:
         description:  Объект с новым комментарием.
         required: true
@@ -186,10 +265,9 @@ components:
           required: true
           type: string
           example: keks@example.ru
-        #TODO Аватар пользователя. Необязательное. Изображение пользователя в формате .jpg или .png.
-        # avatarPath:
-        #  type: string
-        #  example: ?
+        avatarPath:
+          type: string
+          format: binary
         password:
           required: true
           type: string
@@ -209,7 +287,8 @@ components:
           example: keks@example.ru
         avatarPath:
          type: string
-         example: "img/1.png" #TODO если аватар не был передан при регистрации возвращать пустую строку?
+         nullable: true
+         example: "img/1.png"
         token:
           type: string
           example: T2xpdmVyLmNvbm5lckBnbWFpbC5jb20=
@@ -255,4 +334,7 @@ components:
         rating:
           type: number
           example: 5
+    token:
+      type: string
+      example: T2xpdmVyLmNvbm5lckBnbWFpbC5jb20=
 
