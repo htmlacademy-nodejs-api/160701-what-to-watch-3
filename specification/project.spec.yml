@@ -1,0 +1,773 @@
+openapi: 3.1.0
+info:
+  title: "API сервер для демо-проекта 'Что посмотреть'"
+  description: |-
+    * Список ресурсов и маршрутов сервера
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 1.0.0
+tags:
+  - name: films
+    description: Действия с фильмами.
+  - name: favoriteFilms
+    description: Действия с избранными фильмами.
+  - name: comments
+    description: Действия с комментариями
+  - name: users
+    description: Действия с пользователем.
+
+paths:
+  #films
+  /films:
+    get:
+      tags:
+      - films
+      summary: Получение списка фильмов
+      description: Возвращает массив фильмов. Каждый фильм описан в виде объекта.
+      parameters:
+        - name: limit
+          in: query
+          description: Максимальное количество возвращаемых фильмов
+          schema:
+            type: number
+            example: 60
+      responses:
+          "200":
+            description: Возвращает массив фильмов.
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/films"
+    post:
+      tags:
+        - films
+      summary: Добавление фильма
+      description: Добавляет новый фильм
+      parameters:
+          - name: X-Token
+            in: header
+            description: Авторизационный токен пользователя
+            required: true
+            schema:
+              $ref: "#/components/schemas/token"
+      requestBody:
+        description: Информация для создания нового фильма
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createOrUpdateFilm"
+        required: true
+
+      responses:
+        "201":
+          description: Фильм создан. Объект фильма.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/film"
+
+        "400":
+          description: Данные не валидны.
+
+        "401":
+          description: Пользователь не авторизован.
+  /films/genres/{genre}:
+    get:
+      tags:
+        - films
+      summary: Получение списка фильмов определённого жанра
+      description: Получает список фильмов определённого жанра
+
+      parameters:
+        - name: genre
+          in: path
+          description: Определённый жанр фильмов
+          required: true
+          schema:
+            type: string
+            example: Drama
+
+        - name: limit
+          in: query
+          description: Максимальное количество возвращаемых фильмов
+          schema:
+            type: number
+            example: 100
+
+      responses:
+        "200":
+          description: Возвращает массив фильмов определённого жанра.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/films"
+
+        "404":
+          description: Такой жанр не существует
+  /films/promo:
+    get:
+      tags:
+        - films
+      summary: Получение промо-фильма
+      description: Получает промо-фильм
+
+      responses:
+        "200":
+          description: Возвращает объект промо-фильма.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/film"
+  /favorite:
+    get:
+      tags:
+        - favoriteFilms
+      summary: Получить список фильмов «к просмотру»
+      description: Возвращает массив фильмов, добавленных в список «к просмотру».
+      parameters:
+          - name: X-Token
+            in: header
+            description: Авторизационный токен пользователя
+            required: true
+            schema:
+              $ref: "#/components/schemas/token"
+      responses:
+        "200":
+          description: Возвращает массив фильмов, добавленных в список "К просмотру"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/films"
+
+        "401":
+          description: Пользователь не авторизован.
+  /favorite/{filmId}/{status}:
+    post:
+      tags:
+        - favoriteFilms
+      summary: Добавление/удаление фильма из списка "К просмотру"
+      description: Добавляет/удаляет фильма из списка "К просмотру"
+
+      parameters:
+        - name: filmId
+          in: path
+          description: Уникальный идентификатор фильма
+          required: true
+          schema:
+            type: number
+            example: 1
+
+        - name: status
+          in: path
+          description: Статус фильма. Может быть 1 или 0, где 1 добавляет фильма в список «к просмотру», а 0 удаляет
+          required: true
+          schema:
+            type: number
+            example: 1
+        - name: X-Token
+          in: header
+          description: Авторизационный токен пользователя
+          required: true
+          schema:
+            $ref: "#/components/schemas/token"
+      responses:
+        "200":
+          description: Объект фильма
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/film"
+
+        "401":
+          description: Пользователь не авторизован.
+
+        "404":
+          description: Такой фильм не существует
+  /films/{filmId}:
+    get:
+      tags:
+      - films
+      summary: Получить фильм
+      description: Возвращает фильм с идентификатором filmId.
+      parameters:
+        - name: filmId
+          in: path
+          description: Уникальный идентификатор фильма
+          required: true
+          schema:
+            type: number
+            example: 1
+      responses:
+        "200":
+          description: Возвращает детальную информацию по фильму.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/film"
+
+        "404":
+          description: Такой фильм не существует
+    delete:
+      tags:
+        - films
+      summary: Удаление фильма
+      description: Удаляет карточку фильма
+      parameters:
+        - name: filmId
+          in: path
+          description: Уникальный идентификатор фильма
+          required: true
+          schema:
+            type: number
+            example: 1
+        - name: X-Token
+          in: header
+          description: Авторизационный токен пользователя
+          required: true
+          schema:
+            $ref: "#/components/schemas/token"
+
+      responses:
+        "204":
+          description: Фильм удалён.
+
+        "401":
+          description: Пользователь не авторизован.
+
+        "403":
+          description: Недостаточно прав для удаления фильма.
+
+        "404":
+          description: Такой фильм не существует
+    patch:
+      tags:
+        - films
+      summary: Редактирование фильма
+      description: Редактирует карточку фильма
+
+      parameters:
+        - name: filmId
+          in: path
+          description: Уникальный идентификатор фильма
+          required: true
+          schema:
+            type: number
+            example: 1
+        - name: X-Token
+          in: header
+          description: Авторизационный токен пользователя
+          required: true
+          schema:
+            $ref: "#/components/schemas/token"
+
+
+      requestBody:
+        description: Информация для редактирования фильма
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createOrUpdateFilm"
+        required: true
+
+      responses:
+        "200":
+          description: Фильм изменён. Объект фильма.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/film"
+
+        "400":
+          description: Данные не валидны.
+
+        "401":
+          description: Пользователь не авторизован.
+
+        "403":
+          description: Недостаточно прав для редактирования фильма.
+
+        "404":
+          description: Такой фильм не существует
+  #users
+  /users/register:
+    post:
+      tags:
+      - users
+      summary: Регистрация пользователя
+      description: Регистрирует нового пользователя
+
+      requestBody:
+        description: Информация для создания нового пользователя.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createUser'
+      responses:
+        "201":
+          description: Пользователь зарегистрирован. Объект пользователя.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "409":
+          description: Пользователь с таким email уже существует.
+  /users/{userId}/avatar:
+    post:
+      tags:
+        - users
+      summary: Загрузить изображение аватара
+      description: Загружает изображение аватара пользователя c `userId`. Изображение
+        аватара должно быть в формате `png` или `jpg`.
+      parameters:
+        - name: userId
+          in: path
+          description: Уникальный идентификатор пользователя
+          required: true
+          schema:
+            type: number
+            example: 1
+        - name: X-Token
+          in: header
+          description: Авторизационный токен пользователя
+          required: true
+          schema:
+            $ref: "#/components/schemas/token"
+      requestBody:
+        description: Аватар
+        required: true
+        content:
+          'image/jpeg':
+            schema:
+              type: string
+              format: binary
+          'image/png':
+            schema:
+              type: string
+              format: binary
+      responses:
+        "201":
+          description: Пользователь изменен. Объект пользователя.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+
+        "400":
+          description: Некорректный формат изображения
+
+        "404":
+          description: Пользователь с таким логином не существует.
+  /users/login:
+    post:
+      tags:
+      - users
+      summary: Авторизоваться на сервере
+      description: |-
+        * Отправляет авторизационные данные пользователя (логин и пароль).
+        * В случае успешной проверки логина и пароля сервис возвращает клиенту токен. Клиент использует этот токен для отправки любых запросов. Токен передаётся в заголовках.
+        * Если логин или пароль неверный или пользователь не существует, сервер возвращает ошибку и соответствующий код состояния.
+      parameters:
+          - name: X-Token
+            in: header
+            description: Авторизационный токен пользователя
+            required: true
+            schema:
+              $ref: "#/components/schemas/token"
+      requestBody:
+        description:  Информация для авторизации пользователя. Объект, содержащий логин и пароль пользователя.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/authUser'
+      responses:
+        "200":
+          description: Пользователь успешно авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "400":
+          description: Ошибка тела запроса
+        #TODO ошибка неверного логина или пароля
+
+    get:
+      tags:
+      - users
+      summary: Проверить статус авторизации пользователя
+      description: Возвращает информацию о статусе авторизации пользователя.
+      parameters:
+          - name: X-Token
+            in: header
+            description: Авторизационный токен пользователя
+            required: true
+            schema:
+              $ref: "#/components/schemas/token"
+
+      responses:
+        "200":
+          description: Пользователь авторизован. Объект пользователя.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "401":
+          description: Пользователь не авторизован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /users/logout:
+    delete:
+      tags:
+      - users
+      summary: Завершить сеанс пользователя
+      description: Завершает сеанс работы - выход из закрытой части приложения
+      parameters:
+          - name: X-Token
+            in: header
+            description: Авторизационный токен пользователя
+            required: true
+            schema:
+              $ref: "#/components/schemas/token"
+      responses:
+        "204":
+          description: Сеанс завершён
+  #comments
+  /comments/{filmId}:
+    get:
+      tags:
+        - comments
+      summary: Получить список комментариев
+      description: Возвращает список комментариев для фильма с идентификатором `filmId`.
+      parameters:
+        - name: filmId
+          in: path
+          description: Уникальный идентификатор фильма
+          required: true
+          schema:
+            type: number
+            example: 1
+        - name: X-Token
+          in: header
+          description: Авторизационный токен пользователя
+          required: true
+          schema:
+            $ref: "#/components/schemas/token"
+      responses:
+        "200":
+          description: Массив комментариев
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/comment'
+        "400":
+          description: Ошибка тела запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    post:
+      tags:
+        - comments
+      summary: Добавить новый комментарий
+      description: Добавляет новый комментарий для фильма с идентификатором `filmId`.
+      parameters:
+        - name: X-Token
+          in: header
+          description: Авторизационный токен пользователя
+          required: true
+          schema:
+            $ref: "#/components/schemas/token"
+        - name: filmId
+          in: path
+          description: Уникальный идентификатор фильма
+          required: true
+          schema:
+            type: number
+            example: 1
+      requestBody:
+        description:  Объект с новым комментарием.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createComment'
+      responses:
+        "200":
+          description: Объект с новым комментарием
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/comment'
+        "400":
+          description: Ошибка тела запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        "401":
+          description: Пользователь не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+components:
+  schemas:
+    authUser:
+      type: object
+
+      properties:
+        email:
+          required: true
+          type: string
+          example: keks@example.ru
+        password:
+          required: true
+          type: string
+          example: 123456
+    createUser:
+      type: object
+
+      properties:
+        firstname:
+          required: true
+          type: string
+          example: Keks
+        email:
+          required: true
+          type: string
+          example: keks@example.ru
+        avatarPath:
+          type: string
+          format: binary
+        password:
+          required: true
+          type: string
+          example: 123456
+    user:
+      type: object
+
+      properties:
+        id:
+          type: string
+          example: sslj0b80s70b7s0b70s
+        firstname:
+          type: string
+          example: Keks
+        email:
+          type: string
+          example: keks@example.ru
+        avatarPath:
+         type: string
+         nullable: true
+         example: "img/1.png"
+        token:
+          type: string
+          example: T2xpdmVyLmNvbm5lckBnbWFpbC5jb20=
+
+    error:
+      type: object
+
+      properties:
+        error:
+          type: string
+          example: Текст ошибки
+
+    comment:
+      type: object
+      properties:
+        id:
+          type: string
+          example: sslj0b80s70b7s0b70s
+        date:
+          type: string
+          example: Thu Feb 09 2023 06:14:45 GMT+0300 (Москва, стандартное время)
+        text:
+          type: string
+          example: Lorem ipsum
+        rating:
+          type: number
+          example: 5
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+              example: sslj0b80s70b7s0b70s
+            firstname:
+              type: string
+              example: Keks
+    createComment:
+      type: object
+      properties:
+        text:
+          type: string
+          example: Lorem ipsum
+        rating:
+          type: number
+          example: 5
+    token:
+      type: string
+      example: T2xpdmVyLmNvbm5lckBnbWFpbC5jb20=
+    films:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            example: Matrix
+
+          postDate:
+            type: string
+            format: date-time
+            example: 2022-12-22T08:45:40.283Z
+
+          genre:
+            type: string
+            example: Drama
+
+          previewVideoLink:
+            type: string
+            example: https://11.react.pages.academy/static/film/video/traffic.mp4
+
+          userId:
+            type: string
+            example: 6317c3d6a54ab1061c6434ea
+
+          posterImage:
+            type: string
+            example: https://11.react.pages.academy/static/film/poster/matrix.jpg
+
+          commentsAmount:
+            type: number
+            example: 110
+    film:
+      type: object
+
+      properties:
+        name:
+          type: string
+          example: Matrix
+
+        description:
+          type: string
+          example: A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.
+
+        postDate:
+          type: string
+          format: date-time
+          example: 2022-12-22T08:45:40.283Z
+
+        genre:
+          type: string
+          example: Drama
+
+        released:
+          type: number
+          example: 2010
+
+        rating:
+          type: number
+          example: 0
+
+        previewVideoLink:
+          type: string
+          example: https://11.react.pages.academy/static/film/video/traffic.mp4
+
+        videoLink:
+          type: string
+          example: https://11.react.pages.academy/static/film/video/bubbles.mp4
+
+        starring:
+          type: array
+          items:
+            type: string
+            example: Bruce Willis
+
+        director:
+          type: string
+          example: Quentin Tarantino
+
+        runTime:
+          type: number
+          example: 130
+
+        commentsAmount:
+          type: number
+          example: 110
+
+        userId:
+          type: string
+          example: 6317c3d6a54ab1061c6434ea
+
+        posterImage:
+          type: string
+          example: https://11.react.pages.academy/static/film/poster/matrix.jpg
+
+        backgroundImage:
+          type: string
+          example: https://11.react.pages.academy/static/film/background/matrix.jpg
+
+        backgroundColor:
+          type: string
+          example: '#B9B27E'
+    createOrUpdateFilm:
+      type: object
+
+      properties:
+        name:
+          type: string
+          example: Matrix
+
+        description:
+          type: string
+          example: A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.
+
+        genre:
+          type: string
+          example: Drama
+
+        released:
+          type: number
+          example: 2010
+
+        previewVideoLink:
+          type: string
+          example: https://11.react.pages.academy/static/film/video/traffic.mp4
+
+        videoLink:
+          type: string
+          example: https://11.react.pages.academy/static/film/video/bubbles.mp4
+
+        starring:
+          type: array
+          items:
+            type: string
+            example: Bruce Willis
+
+        director:
+          type: string
+          example: Quentin Tarantino
+
+        runTime:
+          type: number
+          example: 130
+
+        posterImage:
+          type: string
+          example: https://11.react.pages.academy/static/film/poster/matrix.jpg
+
+        backgroundImage:
+          type: string
+          example: https://11.react.pages.academy/static/film/background/matrix.jpg
+
+        backgroundColor:
+          type: string
+          example: '#B9B27E'
