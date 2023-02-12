@@ -328,6 +328,12 @@ paths:
           schema:
             type: number
             example: 1
+        - name: X-Token
+          in: header
+          description: Авторизационный токен пользователя
+          required: true
+          schema:
+            $ref: "#/components/schemas/token"
       requestBody:
         description: Аватар
         required: true
