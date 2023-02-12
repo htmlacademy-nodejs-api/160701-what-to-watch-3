@@ -60,9 +60,9 @@ export default class FilmService implements FilmServiceInterface {
   }
 
   //TODO отдать 1 промо фильм
-  public async findPromo(): Promise<DocumentType<FilmEntity>> {
-    return this.filmModel.find().limit(1).populate(['userId']).exec();
-  }
+  // public async findPromo(): Promise<DocumentType<FilmEntity>> {
+  //   return this.filmModel.find().limit(1).populate(['userId']).exec();
+  // }
 
   public async findFavorite(): Promise<DocumentType<FilmEntity>[]> {
     return this.filmModel.find().populate(['userId']).exec();
