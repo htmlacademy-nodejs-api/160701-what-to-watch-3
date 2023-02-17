@@ -8,6 +8,7 @@ import { Component } from '../../types/component.types.js';
 import { LoggerInterface } from '../../common/logger/logger.interface.js';
 import { SortType } from '../../types/sort-type.enum.js';
 import { DEFAULT_FILM_COUNT } from './film.constant.js';
+import mongoose from 'mongoose';
 
 @injectable()
 export default class FilmService implements FilmServiceInterface {
@@ -24,13 +25,25 @@ export default class FilmService implements FilmServiceInterface {
   }
 
   public async findById(filmId: string): Promise<DocumentType<FilmEntity> | null> {
-    return this.filmModel.findById(filmId).populate(['userId']).exec();
+    return this.filmModel
+      .findById(filmId)
+      .agregate([
+        {
+          $match: { _id: new mongoose.Types.ObjectId(filmId) },
+        },
+      ])
+      .populate(['userId'])
+      .exec();
   }
 
   public async find(count?: number): Promise<DocumentType<FilmEntity>[]> {
     const limit = count ?? DEFAULT_FILM_COUNT;
 
-    return this.filmModel.find().sort({ postDate: SortType.Down }).limit(limit).populate(['userId']).exec();
+    return this.filmModel
+      .find({}, {}, { limit })
+      .sort({ postDate: SortType.Down })
+      .populate(['userId'])
+      .exec();
   }
 
   public async deleteById(filmID: string): Promise<DocumentType<FilmEntity> | null> {
@@ -59,21 +72,24 @@ export default class FilmService implements FilmServiceInterface {
     });
   }
 
-  //TODO отдать 1 промо фильм
-  // public async findPromo(): Promise<DocumentType<FilmEntity>> {
-  //   return this.filmModel.find().limit(1).populate(['userId']).exec();
-  // }
+  public async findPromo(): Promise<DocumentType<FilmEntity> | null> {
+    return this.filmModel.findOne().populate(['userId']).exec();
+  }
 
   public async findFavorite(): Promise<DocumentType<FilmEntity>[]> {
     return this.filmModel.find().populate(['userId']).exec();
   }
 
   public async changeFavorite(filmId: string, status: number): Promise<DocumentType<FilmEntity> | null> {
-    return this.filmModel.findByIdAndUpdate(filmId, {
-      $set: {
-        isFavorite: status,
+    return this.filmModel.findByIdAndUpdate(
+      filmId,
+      {
+        $set: {
+          isFavorite: status,
+        },
       },
-    });
+      { new: true },
+    );
   }
 
   public async exists(documentId: string): Promise<boolean> {
