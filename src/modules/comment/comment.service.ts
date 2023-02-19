@@ -57,7 +57,7 @@ export default class CommentService implements CommentServiceInterface {
   }
 
   public async deleteByFilmId(filmId: string): Promise<number> {
-    const result = this.commentModel.deleteMany({ filmId }).exec();
+    const result = await this.commentModel.deleteMany({ filmId }).exec();
 
     return result.deletedCount;
   }
