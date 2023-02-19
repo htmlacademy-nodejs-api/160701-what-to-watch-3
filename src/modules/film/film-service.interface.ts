@@ -10,7 +10,7 @@ export interface FilmServiceInterface {
   deleteById(filmID: string): Promise<DocumentType<FilmEntity> | null>;
   updateById(filmID: string, dto: UpdateFilmDto): Promise<DocumentType<FilmEntity> | null>;
   findByGenre(genre: string, count?: number): Promise<DocumentType<FilmEntity>[]>;
-  incCommentCount(filmID: string): Promise<DocumentType<FilmEntity> | null>;
+  incCommentCount(filmID: string, userRating: number): Promise<void>;
   findPromo(): Promise<DocumentType<FilmEntity> | null>;
   findFavorite(): Promise<DocumentType<FilmEntity>[]>;
   changeFavorite(filmId: string, status: number): Promise<DocumentType<FilmEntity> | null>;

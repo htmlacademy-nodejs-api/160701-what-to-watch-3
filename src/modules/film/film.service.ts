@@ -8,7 +8,6 @@ import { Component } from '../../types/component.types.js';
 import { LoggerInterface } from '../../common/logger/logger.interface.js';
 import { SortType } from '../../types/sort-type.enum.js';
 import { DEFAULT_FILM_COUNT } from './film.constant.js';
-import mongoose from 'mongoose';
 
 @injectable()
 export default class FilmService implements FilmServiceInterface {
@@ -25,25 +24,40 @@ export default class FilmService implements FilmServiceInterface {
   }
 
   public async findById(filmId: string): Promise<DocumentType<FilmEntity> | null> {
-    return this.filmModel
-      .findById(filmId)
-      .agregate([
-        {
-          $match: { _id: new mongoose.Types.ObjectId(filmId) },
-        },
-      ])
-      .populate(['userId'])
-      .exec();
+    return this.filmModel.findById(filmId).populate(['userId']).exec();
   }
 
   public async find(count?: number): Promise<DocumentType<FilmEntity>[]> {
     const limit = count ?? DEFAULT_FILM_COUNT;
 
-    return this.filmModel
-      .find({}, {}, { limit })
-      .sort({ postDate: SortType.Down })
-      .populate(['userId'])
-      .exec();
+    return (
+      this.filmModel
+        // .find({}, {}, { limit })
+        .aggregate([
+          {
+            $lookup: {
+              from: 'comments',
+              let: { filmId: '$_id' },
+              pipeline: [
+                {
+                  $match: {
+                    filmId: '$$filmId',
+                  },
+                },
+                { $project: { _id: 1 } },
+              ],
+              as: 'comments',
+            },
+          },
+          { $addFields: { id: { $toString: '$_id' }, commentCount: { $size: '$comments' } } },
+          { $unset: 'comments' },
+          { $limit: limit },
+          { $sort: { commentCount: SortType.Down } },
+        ])
+        // .sort({ postDate: SortType.Down })
+        // .populate(['userId'])
+        .exec()
+    );
   }
 
   public async deleteById(filmID: string): Promise<DocumentType<FilmEntity> | null> {
@@ -64,12 +78,24 @@ export default class FilmService implements FilmServiceInterface {
       .exec();
   }
 
-  public async incCommentCount(filmID: string): Promise<DocumentType<FilmEntity> | null> {
-    return this.filmModel.findByIdAndUpdate(filmID, {
-      $inc: {
-        commentCount: 1,
-      },
-    });
+  public async incCommentCount(filmID: string, userRating: number): Promise<void> {
+    const existFilm = await this.findById(filmID);
+
+    if (!existFilm) {
+      throw new Error(`The film with id: ${filmID} doesn't exist`);
+    }
+    const newRating = (existFilm.rating * existFilm.commentCount + userRating) / (existFilm.commentCount + 1);
+
+    await this.filmModel
+      .findByIdAndUpdate(filmID, {
+        $inc: {
+          commentCount: 1,
+        },
+        $set: {
+          rating: newRating,
+        },
+      })
+      .exec();
   }
 
   public async findPromo(): Promise<DocumentType<FilmEntity> | null> {
