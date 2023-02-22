@@ -5,6 +5,8 @@ import { LoggerInterface } from '../common/logger/logger.interface.js';
 import { Component } from '../types/component.types.js';
 import { DatabaseInterface } from '../common/database-client/database.interface.js';
 import { getUri } from '../utils/db.js';
+import { CommentServiceInterface } from '../modules/comment/comment-service.interface.js';
+import { FilmServiceInterface } from '../modules/film/film-service.interface.js';
 
 @injectable()
 export default class Application {
@@ -12,6 +14,8 @@ export default class Application {
     @inject(Component.LoggerInterface) private logger: LoggerInterface,
     @inject(Component.ConfigInterface) private config: ConfigService,
     @inject(Component.DatabaseInterface) private databaseClient: DatabaseInterface,
+    @inject(Component.FilmServiceInterface) private filmService: FilmServiceInterface,
+    @inject(Component.CommentServiceInterface) private commentService: CommentServiceInterface,
   ) {}
 
   public async init() {
@@ -27,5 +31,17 @@ export default class Application {
     );
 
     await this.databaseClient.connect(uri);
+
+    const comment = await this.commentService.create({
+      message: `My comment ${new Date().toISOString()}`,
+      rating: Math.floor(Math.random() * 10),
+      postDate: new Date(),
+      userId: '63e8a82d66e29469756b99c7',
+      filmId: '63e8a82e66e29469756b99ca',
+    });
+    console.log(comment);
+
+    const films = await this.filmService.find();
+    console.log(films);
   }
 }
